@@ -6,25 +6,33 @@
 //
 
 import SwiftUI
+import Combine
+import SwiftChatworkAPI
 
 struct ContentView: View {
     @ObservedObject var phoneConnector = PhoneConnector()
+    @StateObject var state = ViewState()
     
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundColor(.accentColor)
-            Text("Hello, world!")
-            Text("\(phoneConnector.apiToken != nil ? "exist": "not" )")
-            Button {
-                phoneConnector.send()
-            } label: {
-                Text("Count")
+        ZStack {
+            if state.token == nil {
+                APITokenIsNotExistView()
+            } else  {
+                RoomListView()
             }
-
         }
-        .padding()
+    }
+}
+
+@MainActor
+final class ViewState: ObservableObject {
+    private var cancellables: Set<AnyCancellable> = []
+    
+    @Published var token: APIToken?
+    
+    init() {
+        TokenStore.shared.$value
+            .assign(to: &$token)
     }
 }
 
