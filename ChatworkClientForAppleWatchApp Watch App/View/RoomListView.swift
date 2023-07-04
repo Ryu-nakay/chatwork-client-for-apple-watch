@@ -8,10 +8,42 @@
 import SwiftUI
 
 struct RoomListView: View {
+    @StateObject var state = RoomListViewState()
+    
     var body: some View {
-        List {
-            Text("ルーム1")
+        VStack {
+            Button {
+                Task {
+                    try? await state.fetch()
+                }
+            } label: {
+                Image(systemName: "goforward")
+            }
+            
+            if state.roomList != nil {
+                List {
+                    ForEach(state.roomList!.body, id: \.roomId) { roomObject in
+                        Text(roomObject.name)
+                    }
+                }
+            }
         }
+
+        
+    }
+}
+
+@MainActor
+final class RoomListViewState: ObservableObject {
+    @Published private(set) var roomList: RoomList?
+    
+    init() {
+        RoomListStore.shared.$value
+            .assign(to: &$roomList)
+    }
+    
+    func fetch() async throws {
+        try? await RoomListStore.shared.fetch()
     }
 }
 

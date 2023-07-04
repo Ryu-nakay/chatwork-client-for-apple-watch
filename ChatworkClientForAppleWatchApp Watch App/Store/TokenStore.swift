@@ -16,5 +16,6 @@ final class TokenStore {
     
     func setToken(apiToken: APIToken) {
         self.value = apiToken
+        try? ChatworkAPI.shared.registerToken(token: apiToken.value)
     }
 }
