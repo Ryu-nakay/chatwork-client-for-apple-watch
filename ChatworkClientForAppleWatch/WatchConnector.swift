@@ -10,13 +10,6 @@ import WatchConnectivity
 import SwiftChatworkAPI
 
 class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
-    
-    @Published var receivedMessage = "WATCH: 未受信"
-    @Published var count = 0
-    
-    @Published var inputToken = ""
-    @Published var apiToken: APIToken?
-    
     override init() {
         super.init()
         if WCSession.isSupported() {
@@ -43,24 +36,11 @@ class WatchConnector: NSObject, ObservableObject, WCSessionDelegate {
     
     func session(_ session: WCSession, didReceiveMessage message: [String: Any]) {
         print("didReceiveMessage: \(message)")
-        
-        DispatchQueue.main.async {
-            self.receivedMessage = "WATCH : \(message["WATCH_COUNT"] as! Int)"
-            self.count = message["WATCH_COUNT"] as! Int
-        }
     }
     
-    func send() {
-        if WCSession.default.isReachable {
-            count += 1
-            WCSession.default.sendMessage(["PHONE_COUNT" : count], replyHandler: nil)
-        }
-    }
-    
-    func registerToken() {
+    func registerToken(inputToken: String) {
         if WCSession.default.isReachable {
             if let apiToken = try? APIToken(value: inputToken) {
-                self.apiToken = apiToken
                 WCSession.default.sendMessage(["TOKEN_EXIST" : apiToken.value], replyHandler: nil)
             }
         }

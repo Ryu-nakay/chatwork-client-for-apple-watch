@@ -23,9 +23,16 @@ struct RoomListView: View {
             if state.roomList != nil {
                 List {
                     ForEach(state.roomList!.body, id: \.roomId) { roomObject in
-                        Text(roomObject.name)
+                        HStack {
+                            Image(systemName: "circle")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 20)
+                            Text(roomObject.name)
+                        }
                     }
                 }
+                .listStyle(.plain)
             }
         }
 

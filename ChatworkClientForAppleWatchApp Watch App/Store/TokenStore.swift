@@ -12,7 +12,13 @@ import Foundation
 final class TokenStore {
     public static let shared: TokenStore = .init()
     
-    @Published private(set) var value: APIToken?
+    @Published private(set) var value: APIToken? = APITokenManager().load() {
+        didSet {
+            if oldValue == nil && value != nil {
+                APITokenManager().save(tokenData: value!)
+            }
+        }
+    }
     
     func setToken(apiToken: APIToken) {
         self.value = apiToken

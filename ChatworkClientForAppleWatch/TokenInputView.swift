@@ -8,14 +8,13 @@
 import SwiftUI
 
 struct TokenInputView: View {
-    @ObservedObject var watchConnector = WatchConnector()
+    @StateObject var state = TokenInputViewState()
     
     var body: some View {
         VStack {
-            Text("\(watchConnector.apiToken != nil ? "exist": "not" )")
             Text("Chatwork API Tokenを入力")
             
-            TextField("token", text: $watchConnector.inputToken)
+            TextField("token", text: $state.inputToken)
                 .textFieldStyle(.roundedBorder)
                 .padding(20)
             
@@ -23,7 +22,7 @@ struct TokenInputView: View {
                 .frame(height: 80)
             
             Button {
-                watchConnector.registerToken()
+                state.registerToken()
             } label: {
                 Text("登録")
             }
