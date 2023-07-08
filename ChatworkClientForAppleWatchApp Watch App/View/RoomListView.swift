@@ -11,32 +11,37 @@ struct RoomListView: View {
     @StateObject var state = RoomListViewState()
     
     var body: some View {
-        VStack {
-            Button {
-                Task {
-                    try? await state.fetch()
+        NavigationView {
+            VStack {
+                Button {
+                    Task {
+                        await state.fetch()
+                    }
+                } label: {
+                    Image(systemName: "goforward")
                 }
-            } label: {
-                Image(systemName: "goforward")
-            }
-            
-            if state.roomList != nil {
-                List {
-                    ForEach(state.roomList!.body, id: \.roomId) { roomObject in
-                        HStack {
-                            Image(systemName: "circle")
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: 20)
-                            Text(roomObject.name)
+                
+                if state.roomList != nil {
+                    List {
+                        ForEach(state.roomList!.body, id: \.roomId) { roomObject in
+                            NavigationLink(destination: RoomView()) {
+                                HStack {
+                                    Image(systemName: "circle")
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(width: 20)
+                                    Text(roomObject.name)
+                                }
+                            }
                         }
                     }
+                    .listStyle(.plain)
                 }
-                .listStyle(.plain)
+            }
+            .task {
+                await state.fetch()
             }
         }
-
-        
     }
 }
 
@@ -49,7 +54,7 @@ final class RoomListViewState: ObservableObject {
             .assign(to: &$roomList)
     }
     
-    func fetch() async throws {
+    func fetch() async {
         try? await RoomListStore.shared.fetch()
     }
 }
